@@ -5,7 +5,7 @@ import tensorflow as tf
 from pprint import pprint
 
 # 1) 加载模型
-MODEL_PATH = "cloud_classifier.keras"
+MODEL_PATH = "../cloud_classifier.keras"
 model = tf.keras.models.load_model(MODEL_PATH)
 
 # 2) 与训练保持一致的配置
@@ -82,7 +82,7 @@ def predict_folder(folder: str):
 
 if __name__ == "__main__":
     # 单张图片
-    cls, score, probs = predict_image("atmo2_20250826_111547.jpg")
+    cls, score, probs = predict_image("../atmo2_20250826_111547.jpg")
     print(f"预测类别: {cls}, 置信度: {score:.4f}")
     pprint(probs)
     # 批量

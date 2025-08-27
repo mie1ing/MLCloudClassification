@@ -18,7 +18,7 @@ from tensorflow.keras.optimizers import Adam
 # 基本配置
 image_size = (128, 128)
 batch_size = 16
-train_dir = 'training_data'  # 确保目录存在，子目录为类别名称
+train_dir = '../training_data'  # 确保目录存在，子目录为类别名称
 
 # 1) 解析类别名称（来自子目录）
 class_names = sorted([d.name for d in os.scandir(train_dir) if d.is_dir()])
