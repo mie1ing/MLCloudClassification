@@ -1,7 +1,6 @@
 # python
 # infer.py
 import os
-import json
 from typing import Tuple, List
 
 import torch
@@ -37,7 +36,7 @@ def get_model(name: str, num_classes: int):
         in_features = model.fc.in_features
         model.fc = torch.nn.Linear(in_features, num_classes)
     else:
-        raise ValueError(f"不支持的模型: {name}")
+        raise ValueError(f"Unsupport model: {name}")
     return model
 
 @torch.no_grad()
@@ -71,12 +70,11 @@ def predict_folder(folder: str):
     return results
 
 if __name__ == "__main__":
-    # 示例：单张图片
+    # Example: single image
     cls, score, probs = predict_image("atmo2_20250826_111547.jpg")
-    print(f"预测类别: {cls}, 置信度: {score:.4f}")
+    print(f"Predicted class: {cls}, Confidence: {score:.4f}")
     print(probs)
-
-    # 示例：目录批量
+    # Example: batch over a directory
     # for name, cls, score in predict_folder("some_dir"):
     #     print(f"{name}\t{cls}\t{score:.4f}")
     pass

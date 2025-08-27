@@ -18,14 +18,14 @@ from config import (
     BEST_WEIGHTS_PATH
 )
 
-# 允许加载被截断但仍可解码的图像，避免轻微损坏直接抛错
+# Allow decoding truncated images to avoid hard failures on mildly corrupted files
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 def set_seed(seed: int):
     random.seed(seed)
     torch.manual_seed(seed)
-    torch.use_deterministic_algorithms(False)  # CPU 训练，保持较好性能
+    torch.use_deterministic_algorithms(False)  # Allow non-deterministic algorithms on CPU for better performance
 
 
 def make_transforms(image_size: Tuple[int, int]):
@@ -46,13 +46,13 @@ def make_transforms(image_size: Tuple[int, int]):
 
 
 def build_target_mapping(found_classes, desired_classes) -> Dict[int, int]:
-    # found_classes: 来自 ImageFolder 的按字母序类名列表
-    # desired_classes: 我们在 config 中定义的类名顺序（希望训练输出与之对齐）
+    # found_classes: class-name list from ImageFolder, sorted alphabetically
+    # desired_classes: class-name order defined in config (we want model outputs to align with this order)
     if set(found_classes) != set(desired_classes):
         missing = set(desired_classes) - set(found_classes)
         extra = set(found_classes) - set(desired_classes)
         raise ValueError(
-            f"数据集类别与配置不一致。缺少: {sorted(missing)}; 多余: {sorted(extra)}"
+            f"Dataset classes mismatch config. Missing: {sorted(missing)}; Extra: {sorted(extra)}"
         )
     # old_idx -> new_idx
     name_to_new = {name: i for i, name in enumerate(desired_classes)}
@@ -78,17 +78,17 @@ def get_model(name: str, num_classes: int) -> nn.Module:
         in_features = model.fc.in_features
         model.fc = nn.Linear(in_features, num_classes)
     else:
-        raise ValueError(f"不支持的模型: {name}")
+        raise ValueError(f"Unsupported model: {name}")
     return model
 
 
 class TargetMapper:
     """
-    顶层定义的可调用类，支持被 DataLoader 的多进程 worker 安全地 pickle。
-    将 ImageFolder 的原始类别索引映射到配置中指定的类别顺序索引。
+    Top-level callable class that can be safely pickled by DataLoader multiprocess workers.
+    Maps ImageFolder's original class indices to the index order specified in the config.
     """
     def __init__(self, mapping: Dict[int, int]):
-        # 存一份副本，避免外部意外修改
+        # Keep a copy to avoid accidental external modifications
         self.mapping = dict(mapping)
 
     def __call__(self, y: int) -> int:
@@ -97,12 +97,12 @@ class TargetMapper:
 
 def is_image_ok(path: str) -> bool:
     """
-    用于 ImageFolder 的 is_valid_file：在构建样本列表时过滤坏图。
-    仅做快速完整性校验，不会真正解码像素数据。
+    For ImageFolder's is_valid_file: filter out bad images when building the sample list.
+    Performs a quick integrity check without actually decoding pixel data.
     """
     try:
         with Image.open(path) as img:
-            img.verify()  # 快速校验文件结构
+            img.verify()  # Fast structural validation of the file
         return True
     except Exception:
         return False
@@ -110,7 +110,7 @@ def is_image_ok(path: str) -> bool:
 
 def safe_pil_loader(path: str) -> Image.Image:
     """
-    更健壮的 PIL 加载器：统一转 RGB，配合 LOAD_TRUNCATED_IMAGES 容忍轻微截断。
+    More robust PIL loader: always convert to RGB; with LOAD_TRUNCATED_IMAGES it tolerates slight truncation.
     """
     with Image.open(path) as img:
         return img.convert("RGB")
@@ -141,15 +141,15 @@ def main():
     device = torch.device("cpu")  # Intel macOS，使用 CPU
     torch.set_num_threads(os.cpu_count() or 4)
 
-    # 基础数据集（用于确定类别与索引）
+    # Base dataset (used to determine classes and indices)
     base = datasets.ImageFolder(root=DATA_DIR)
     old_to_new = build_target_mapping(base.classes, CLASS_NAMES)
 
-    # 定义 transforms 与目标索引映射（避免在 main 内定义 lambda，改为顶层可pickle对象）
+    # Define transforms and target index mapping (avoid defining lambda inside main; use top-level picklable objects instead)
     train_tf, val_tf = make_transforms(IMAGE_SIZE)
     target_transform = TargetMapper(old_to_new)
 
-    # 使用健壮的 loader + 预过滤坏图
+    # Use a robust loader and pre-filter corrupted images
     full_train = datasets.ImageFolder(
         root=DATA_DIR,
         transform=train_tf,
@@ -165,20 +165,21 @@ def main():
         is_valid_file=is_image_ok,
     )
 
-    # 统计过滤情况（便于排查数据问题）
+    # Record filtering statistics (to help troubleshoot data issues)
     total_raw = len(getattr(base, "samples", []))
     total_valid = len(full_train)
     if total_raw and total_valid < total_raw:
-        print(f"检测到并已过滤损坏/不可读图像: {total_raw - total_valid} / {total_raw}")
+        print(f"Detected and filtered corrupted/unreadable images: {total_raw - total_valid} / {total_raw}")
 
     n_total = len(full_train)
     if n_total == 0:
-        raise RuntimeError(f"在 {DATA_DIR} 未找到任何可用样本，请检查目录结构与图片完整性。")
+        raise RuntimeError(f"No usable samples found in {DATA_DIR}. "
+                           f"Please check the directory structure and image integrity.")
     n_val = max(1, int(n_total * VAL_SPLIT))
     n_train = n_total - n_val
 
     gen = torch.Generator().manual_seed(SEED)
-    # 在有效样本范围内划分训练/验证
+    # Split train/validation within the set of valid samples
     train_idx, val_idx = random_split(range(n_total), [n_train, n_val], generator=gen)
     train_ds = Subset(full_train, train_idx.indices if hasattr(train_idx, 'indices') else train_idx)
     val_ds = Subset(full_val, val_idx.indices if hasattr(val_idx, 'indices') else val_idx)
@@ -232,9 +233,9 @@ def main():
             torch.save(model.state_dict(), BEST_WEIGHTS_PATH)
             with open("class_names.json", "w", encoding="utf-8") as f:
                 json.dump(CLASS_NAMES, f, ensure_ascii=False, indent=2)
-            print(f"  -> 保存最佳权重到 {BEST_WEIGHTS_PATH} (Val Acc={best_acc:.4f})")
+            print(f"  -> Saved best weights to {BEST_WEIGHTS_PATH} (Val Acc={best_acc:.4f})")
 
-    print(f"训练完成。最佳验证准确率: {best_acc:.4f}")
+    print(f"Training completed. Best validation accuracy: {best_acc:.4f}")
 
 
 if __name__ == "__main__":
