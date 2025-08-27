@@ -9,10 +9,10 @@ MODEL_PATH = "cloud_classifier.keras"
 model = tf.keras.models.load_model(MODEL_PATH)
 
 # 2) 与训练保持一致的配置
-IMAGE_SIZE = (128, 128)  # TODO: 替换为你训练时的 image_size
+IMAGE_SIZE = (128, 128)
 CLASS_NAMES = ["altocumulus", "altostratus", "cirrocumulus",
                "cirrostratus", "cirrus", "cumulonimbus", "cumulus",
-               "nimbostratus", "stratocumulus", "stratus"]  # TODO: 用训练时的类别顺序填充
+               "nimbostratus", "stratocumulus", "stratus"] 
 
 _VALID_EXTS = (".jpg", ".jpeg", ".png", ".bmp")
 
