@@ -12,7 +12,7 @@ model = tf.keras.models.load_model(MODEL_PATH)
 IMAGE_SIZE = (128, 128)
 CLASS_NAMES = ["altocumulus", "altostratus", "cirrocumulus",
                "cirrostratus", "cirrus", "cumulonimbus", "cumulus",
-               "nimbostratus", "stratocumulus", "stratus"] 
+               "nimbostratus", "stratocumulus", "stratus"]
 
 _VALID_EXTS = (".jpg", ".jpeg", ".png", ".bmp")
 
