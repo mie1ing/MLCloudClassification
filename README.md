@@ -16,8 +16,8 @@ If you are on a different OS/architecture, prefer the environment.yml method. Th
 Option A — Portable (recommended for different platforms)
 ``` bash
 # Create and activate the environment from environment.yml
-condavenv env create -n <env-name> -f environment.yml
-condavenv activate <env-name>
+conda env create -n <env-name> -f environment.yml
+conda activate <env-name>
 
 # Verify Python version
 python --version  # Expect 3.13.2
@@ -26,8 +26,8 @@ Option B — Exact reproduction (recommended on the same platform as the author)
 ``` bash
 # Create and activate the environment from a lock file
 # Replace the file name with the one in this repo (e.g., conda-osx-64.lock)
-condavenv create -n <env-name> --file <your-platform>.lock
-condavenv activate <env-name>
+conda create -n <env-name> --file <your-platform>.lock
+conda activate <env-name>
 
 # Verify Python version
 python --version  # Expect 3.13.2
