@@ -59,12 +59,12 @@ export PYTHONHASHSEED=0
 ## How to Run
 Basic command:
 ``` bash
-condavenv activate <env-name>
+conda activate <env-name>
 python train.py
 ```
 With a config file (if your workflow uses one):
 ``` bash
-condavenv activate <env-name>
+conda activate <env-name>
 python train.py --config configs/example.local.yaml
 ```
 ## Troubleshooting
@@ -72,7 +72,7 @@ python train.py --config configs/example.local.yaml
 ``` bash
 python --version
 python -c "import sys, platform; print(platform.platform(), platform.machine()); print(sys.version)"
-condavenv list
+conda list
 ```
 - If you face dependency conflicts on a different OS/arch, switch to Option A (environment.yml). Exact lock files are platform-specific and may not resolve on other systems.
 - When reporting issues, please include:
