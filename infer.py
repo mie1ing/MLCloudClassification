@@ -71,10 +71,10 @@ def predict_folder(folder: str):
 
 if __name__ == "__main__":
     # Example: single image
-    cls, score, probs = predict_image("atmo2_20250826_111547.jpg")
-    print(f"Predicted class: {cls}, Confidence: {score:.4f}")
-    print(probs)
+    # cls, score, probs = predict_image("atmo2_20250826_111547.jpg")
+    # print(f"Predicted class: {cls}, Confidence: {score:.4f}")
+    # print(probs)
     # Example: batch over a directory
-    # for name, cls, score in predict_folder("some_dir"):
-    #     print(f"{name}\t{cls}\t{score:.4f}")
+    for name, cls, score in predict_folder("testing_data"):
+        print(f"{name}\t{cls}\t{score:.4f}")
     pass
