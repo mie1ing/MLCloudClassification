@@ -23,7 +23,7 @@ MLCloudClassification/
 ```
 
 ## System Requirements
-- OS/Arch: macOS Sonoma (x86_64) or compatible
+- OS/Arch: macOS (x86_64) or compatible
 - Python: 3.13.2
 - Package manager: conda
 
