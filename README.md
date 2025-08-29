@@ -3,7 +3,7 @@
 Atmocorder - Cloud classification
 ## Overview
 This repository provides code and environment specifications to reproduce the development and training environment precisely. It supports:
-- Portable setup via environment.yml
+- Portable setup via mlccenvironment.yml
 - Fully pinned, exact-reproduction setup via platform-specific .lock files
 
 ## Project Structure
@@ -27,12 +27,14 @@ MLCloudClassification/
 - Python: 3.13.2
 - Package manager: conda
 
-If you are on a different OS/architecture, prefer the environment.yml method. The .lock file is platform-specific.
+If you are on a different OS/architecture, prefer the mlccenvironment.yml method. The .lock file is platform-specific.
 ## Environment Setup
 Option A — Portable (recommended for different platforms)
+
+Use the provided `mlccenvironment.yml` file to create and activate a new environment:
 ``` bash
-# Create and activate the environment from environment.yml
-conda env create -n <env-name> -f environment.yml
+# Create and activate the environment from mlccenvironment.yml
+conda env create -n <env-name> -f mlccenvironment.yml
 conda activate <env-name>
 
 # Verify Python version
@@ -90,7 +92,7 @@ python --version
 python -c "import sys, platform; print(platform.platform(), platform.machine()); print(sys.version)"
 conda list
 ```
-- If you face dependency conflicts on a different OS/arch, switch to Option A (environment.yml). Exact lock files are platform-specific and may not resolve on other systems.
+- If you face dependency conflicts on a different OS/arch, switch to Option A (mlccenvironment.yml). Exact lock files are platform-specific and may not resolve on other systems.
 - When reporting issues, please include:
     - OS and architecture (e.g., macOS Sonoma, x86_64)
     - Python version
