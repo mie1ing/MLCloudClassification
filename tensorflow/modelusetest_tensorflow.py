@@ -5,7 +5,7 @@ import tensorflow as tf
 from pprint import pprint
 
 # 1) 加载模型
-MODEL_PATH = "../cloud_classifier.keras"
+MODEL_PATH = "cloud_classifier.keras"
 model = tf.keras.models.load_model(MODEL_PATH)
 
 # 2) 与训练保持一致的配置
