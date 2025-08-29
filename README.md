@@ -52,19 +52,49 @@ python --version  # Expect 3.13.2
 ```
 Upgrade or update is not required for exact reproducibility. If you need to regenerate a lock file on your platform after a successful install, you can do so for team-wide consistency.
 ## Data Setup
-- Prepare datasets locally and note the paths you will use at runtime.
-- Avoid hard-coded absolute paths. Use configuration or CLI flags where applicable.
+The training code expects images arranged in a folder called `training_data/`,
+with one subdirectory per class. The default classes are defined in
+[`config.py`](config.py) (`CLASS_NAMES`) and the dataset path is set by
+`DATA_DIR`.
 
-Example config (optional):
-``` yaml
-# configs/example.local.yaml
-data:
-  root: "<your-dataset-path>"
-output:
-  dir: "./outputs"
-train:
-  seed: 42
-  num_workers: 8
+Example directory layout:
+
+```
+training_data/
+├── altocumulus/
+│   ├── img001.jpg
+│   └── ...
+├── altostratus/
+│   └── ...
+...
+└── stratus/
+    └── ...
+```
+
+### Preparing the dataset
+If your raw images are stored elsewhere and labelled via CSV files, you can
+use `sort_images.py` to build the structure above:
+
+1. Place all raw image folders under `all_images/`. Each folder must contain a
+   single `.csv` file whose first column is the filename and second column is
+   the class label.
+2. Run the script:
+
+   ```bash
+   python sort_images.py
+   ```
+
+   Images are copied into `training_data/<class>` by default. Adjust the
+   variables at the top of `sort_images.py` if you need to move files or change
+   source/destination paths.
+
+If you already have data organised by class, place it directly in
+`training_data/` or update `DATA_DIR` in `config.py` to point to its location.
+
+Optional: validate images before training to catch corrupt files:
+
+```bash
+python validate_image.py path/to/image.jpg [more_images...]
 ```
 ## Reproducibility Notes
 - Use a fixed random seed when running experiments.
