@@ -15,9 +15,6 @@ MLCloudClassification/
 ├── sort_images.py          # Organise dataset images
 ├── train.py                # Training script
 ├── validate_image.py       # Validate individual images
-├── tensorflow/             # Example TensorFlow scripts
-│   ├── mltest_tensorflow.py
-│   └── modelusetest_tensorflow.py
 ├── mlccenvironment.yml     # Conda environment specification
 └── conda-osx-64.lock       # Locked environment for macOS x86_64
 ```
@@ -109,11 +106,6 @@ Basic command:
 ``` bash
 conda activate <env-name>
 python train.py
-```
-With a config file (if your workflow uses one):
-``` bash
-conda activate <env-name>
-python train.py --config configs/example.local.yaml
 ```
 
 ## Inference
