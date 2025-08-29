@@ -85,6 +85,38 @@ With a config file (if your workflow uses one):
 conda activate <env-name>
 python train.py --config configs/example.local.yaml
 ```
+
+## Inference
+Run predictions on new images using `infer.py`.
+
+### Single Image
+```bash
+python - <<'PY'
+from infer import predict_image
+cls, score, probs = predict_image("path/to/image.jpg")
+print(f"Predicted class: {cls}, Confidence: {score:.4f}")
+print(probs)
+PY
+```
+Example output:
+```
+Predicted class: cirrus, Confidence: 0.8732
+[0.002, 0.001, 0.8732, ...]
+```
+
+### Batch over a Folder
+```bash
+python - <<'PY'
+from infer import predict_folder
+for name, cls, score in predict_folder("path/to/images"):
+    print(f"{name}\t{cls}\t{score:.4f}")
+PY
+```
+Example output:
+```
+img1.jpg    cumulus    0.9700
+img2.jpg    stratus    0.8800
+```
 ## Troubleshooting
 - Verify your environment:
 ``` bash
