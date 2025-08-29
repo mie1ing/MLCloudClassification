@@ -5,14 +5,14 @@ from typing import List, Tuple
 # Data and classes
 DATA_DIR: str = "training_data/"
 CLASS_NAMES: List[str] = [
-    "Altocumulus", "Altostratus", "Cirrocumulus",
-    "Cirrostratus", "Cirrus", "Indistinguishable", "Cumulus",
-    "Clear sky", "Stratocumulus", "Stratus"
+    "Altocumulus", "Cirrocumulus",
+    "Cirrus", "Indistinguishable", "Cumulus",
+    "Clear sky", "Stratocumulus"
 ]
 NUM_CLASSES: int = len(CLASS_NAMES)
 
 # Input size
-IMAGE_SIZE: Tuple[int, int] = (128, 128)  # (H, W)
+IMAGE_SIZE: Tuple[int, int] = (224, 224)  # (H, W)
 
 # Training hyperparameters
 VAL_SPLIT: float = 0.2
@@ -24,11 +24,11 @@ NUM_WORKERS: int = 4
 SEED: int = 42
 
 # Model
-MODEL_NAME: str = "mobilenet_v3_small"
+MODEL_NAME: str = "resnet18" # "mobilenet_v3_small", "efficientnet_b0" or "resnet18"
 
 # Normalization (using ImageNet pretrained weights mean/std)
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD  = [0.229, 0.224, 0.225]
 
 # Best weights save path
-BEST_WEIGHTS_PATH: str = "cloud_classifier_pt_best.pt"
+BEST_WEIGHTS_PATH: str = "test.pt"
