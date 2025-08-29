@@ -6,6 +6,22 @@ This repository provides code and environment specifications to reproduce the de
 - Portable setup via environment.yml
 - Fully pinned, exact-reproduction setup via platform-specific .lock files
 
+## Project Structure
+
+```
+MLCloudClassification/
+├── config.py               # Configuration helpers
+├── infer.py                # Run inference on new images
+├── sort_images.py          # Organise dataset images
+├── train.py                # Training script
+├── validate_image.py       # Validate individual images
+├── tensorflow/             # Example TensorFlow scripts
+│   ├── mltest_tensorflow.py
+│   └── modelusetest_tensorflow.py
+├── mlccenvironment.yml     # Conda environment specification
+└── conda-osx-64.lock       # Locked environment for macOS x86_64
+```
+
 ## System Requirements
 - OS/Arch: macOS Sonoma (x86_64) or compatible
 - Python: 3.13.2
