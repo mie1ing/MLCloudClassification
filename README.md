@@ -139,15 +139,3 @@ Example output:
 img1.jpg    cumulus    0.9700
 img2.jpg    stratus    0.8800
 ```
-## Troubleshooting
-- Verify your environment:
-``` bash
-python --version
-python -c "import sys, platform; print(platform.platform(), platform.machine()); print(sys.version)"
-conda list
-```
-- If you face dependency conflicts on a different OS/arch, switch to Option A (mlccenvironment.yml). Exact lock files are platform-specific and may not resolve on other systems.
-- When reporting issues, please include:
-    - OS and architecture (e.g., macOS Sonoma, x86_64)
-    - Python version
-    - The command you ran and the full error message
