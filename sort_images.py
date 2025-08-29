@@ -8,10 +8,6 @@ output_root = "training_data"    # Unified destination root directory
 move_files = False               # True=move, False=copy
 overwrite = False                # True=overwrite existing targets; False=skip
 
-def sanitize(name: str) -> str:
-    # Clean up characters in class names that are invalid for folder names
-    return "".join("_" if c in '/\\:*?"<>|' else c for c in str(name)).strip()
-
 os.makedirs(output_root, exist_ok=True)
 
 for dirpath, _, filenames in os.walk(top_dir):
@@ -29,7 +25,7 @@ for dirpath, _, filenames in os.walk(top_dir):
         if not os.path.exists(src):
             print(f"Missing: {src}")
             continue
-        dst_dir = os.path.join(output_root, sanitize(cls))
+        dst_dir = os.path.join(output_root, cls)
         os.makedirs(dst_dir, exist_ok=True)
         dst = os.path.join(dst_dir, os.path.basename(str(fname)))
         if os.path.exists(dst) and not overwrite:
