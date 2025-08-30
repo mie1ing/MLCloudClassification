@@ -7,6 +7,8 @@ from typing import List, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.patches import Rectangle
+from matplotlib.colors import TwoSlopeNorm
 
 
 def load_table(path: str) -> Tuple[List[str], List[str], np.ndarray, float | None]:
@@ -44,16 +46,45 @@ def plot_table(actual: List[str], pred: List[str], table: np.ndarray,
                accuracy: float | None, out: str | None, show: bool) -> None:
     """Plot the contingency table as a heatmap."""
     fig, ax = plt.subplots(figsize=(8, 6))
-    im = ax.imshow(table, cmap='Blues')
+
+    # 1) 上色前将非对角元素取相反数（仅用于色彩映射）
+    disp = table.astype(float).copy()
+    mask = np.ones_like(disp, dtype=bool)
+    # 对于非方阵，fill_diagonal 也会按 min(n_rows, n_cols) 处理主对角
+    np.fill_diagonal(mask, False)
+    disp[mask] *= -1
+
+    # 2) 以 0 为中点的归一化，使用对称范围 [-M, M]
+    M = float(np.max(np.abs(disp))) if disp.size else 1.0
+    if M == 0.0:
+        M = 1.0
+    norm = TwoSlopeNorm(vmin=-M, vcenter=0.0, vmax=M)
+
+    # 使用适合正负值的发散色图
+    im = ax.imshow(disp, cmap='RdBu', norm=norm)
 
     ax.set_xticks(range(len(pred)))
     ax.set_xticklabels(pred, rotation=45, ha='right')
     ax.set_yticks(range(len(actual)))
     ax.set_yticklabels(actual)
 
+    # 单元格文本仍显示原始计数（不带符号）
     for i in range(table.shape[0]):
         for j in range(table.shape[1]):
             ax.text(j, i, table[i, j], ha='center', va='center', color='black')
+
+    # 高亮对角线单元格：为每个对角格添加红色描边框
+    diag_len = min(table.shape[0], table.shape[1])
+    for k in range(diag_len):
+        rect = Rectangle(
+            (k - 0.5, k - 0.5),
+            1, 1,
+            fill=False,
+            edgecolor='blue',
+            linewidth=2.5,
+            zorder=3
+        )
+        ax.add_patch(rect)
 
     ax.set_xlabel('Predicted')
     ax.set_ylabel('Actual')
@@ -61,7 +92,8 @@ def plot_table(actual: List[str], pred: List[str], table: np.ndarray,
     if accuracy is not None:
         title += f' (Accuracy: {accuracy:.4f})'
     ax.set_title(title)
-    fig.colorbar(im, ax=ax)
+
+    # 3) 最终成图不显示 colorbar（故移除 fig.colorbar）
     fig.tight_layout()
 
     if out:
