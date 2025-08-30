@@ -154,3 +154,13 @@ python compare_results.py --pred test_results.csv --truth ground_truth.csv --out
 The predictions CSV should contain a header with columns: image name, predicted
 class and score. The ground-truth CSV must list image name and actual class with
 no header.
+
+### Visualizing Results
+
+Plot the contingency table using `plot_contingency.py` to quickly inspect model performance:
+
+```bash
+python plot_contingency.py --table table.csv --out table.png
+```
+
+Add `--show` to display the figure interactively instead of saving it.
