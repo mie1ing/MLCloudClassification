@@ -81,5 +81,5 @@ if __name__ == "__main__":
     # print(f"Predicted class: {cls}, Confidence: {score:.4f}")
     # print(probs)
     # Example: batch over a directory
-    for name, cls, score in predict_folder("testing_data", csv_path="predictions.csv"):
+    for name, cls, score in predict_folder("testing_data", csv_path="testing_data/test_results.csv"):
         print(f"{name}\t{cls}\t{score:.4f}")
