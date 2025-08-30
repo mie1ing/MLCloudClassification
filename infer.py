@@ -1,6 +1,7 @@
 # python
 # infer.py
 import os
+import csv
 from typing import Tuple, List
 
 import torch
@@ -59,7 +60,7 @@ def predict_image(path: str) -> Tuple[str, float, List[float]]:
     top_prob = float(probs[top_idx])
     return top_class, top_prob, probs
 
-def predict_folder(folder: str):
+def predict_folder(folder: str, csv_path: str = None):
     valid_exts = (".jpg", ".jpeg", ".png", ".bmp")
     results = []
     for fn in os.listdir(folder):
@@ -67,6 +68,11 @@ def predict_folder(folder: str):
             p = os.path.join(folder, fn)
             cls, score, _ = predict_image(p)
             results.append((fn, cls, score))
+    if csv_path:
+        with open(csv_path, "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["filename", "prediction", "score"])
+            writer.writerows(results)
     return results
 
 if __name__ == "__main__":
@@ -75,6 +81,5 @@ if __name__ == "__main__":
     # print(f"Predicted class: {cls}, Confidence: {score:.4f}")
     # print(probs)
     # Example: batch over a directory
-    for name, cls, score in predict_folder("testing_data"):
+    for name, cls, score in predict_folder("testing_data", csv_path="predictions.csv"):
         print(f"{name}\t{cls}\t{score:.4f}")
-    pass
