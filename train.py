@@ -4,6 +4,7 @@ import os
 import json
 import random
 from typing import Dict, Tuple
+import time
 
 import torch
 import torch.nn as nn
@@ -239,4 +240,9 @@ def main():
 
 
 if __name__ == "__main__":
+    time_start = time.time()
     main()
+    time_end = time.time()
+    elapsed = time_end - time_start
+    minutes, seconds = divmod(int(elapsed), 60)
+    print(f"Total time: {minutes:02d}:{seconds:02d}")

@@ -5,9 +5,9 @@ from typing import List, Tuple
 # Data and classes
 DATA_DIR: str = "training_data/"
 CLASS_NAMES: List[str] = [
-    "Altocumulus", "Cirrocumulus",
+    "Altocumulus", "Cirrocumulus", 'Cirrostratus',
     "Cirrus", "Indistinguishable", "Cumulus",
-    "Clear sky", "Stratocumulus"
+    "Clear sky", "Stratocumulus",'Altostratus', 'Stratus'
 ]
 NUM_CLASSES: int = len(CLASS_NAMES)
 
