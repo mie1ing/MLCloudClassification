@@ -13,6 +13,7 @@ MLCloudClassification/
 ├── config.py               # Configuration helpers
 ├── infer.py                # Run inference on new images
 ├── sort_images.py          # Organise dataset images
+├── compare_results.py      # Compare predictions against ground truth
 ├── train.py                # Training script
 ├── validate_image.py       # Validate individual images
 ├── mlccenvironment.yml     # Conda environment specification
@@ -139,3 +140,17 @@ Example output:
 img1.jpg    cumulus    0.9700
 img2.jpg    stratus    0.8800
 ```
+
+## Comparing Predictions
+
+Generate a contingency table and overall accuracy by comparing prediction and
+ground-truth CSV files. The table always lists classes defined in
+[`config.py`](config.py).
+
+```bash
+python compare_results.py --pred test_results.csv --truth ground_truth.csv --out table.csv
+```
+
+The predictions CSV should contain a header with columns: image name, predicted
+class and score. The ground-truth CSV must list image name and actual class with
+no header.
