@@ -4,7 +4,7 @@ import shutil
 import pandas as pd
 
 # Config: recursively scan all subdirectories under top_dir; only process directories that have exactly one .csv
-top_dir = "all_images"           # Top-level directory containing unclassified images
+top_dir = "unsort_images"           # Top-level directory containing unclassified images
 train_root = "training_data"     # Destination directory for training images
 val_root = "validation_data"     # Destination directory for validation images
 move_files = False               # True=move, False=copy from source to training_data
@@ -23,7 +23,7 @@ for dirpath, _, filenames in os.walk(top_dir):
     csv_path = os.path.join(dirpath, csvs[0])
     try:
         # First column=filename, second column=class
-        df = pd.read_csv(csv_path, header=None)
+        df = pd.read_csv(csv_path, header=None).dropna(subset=[1])
     except Exception as e:
         print(f"Failed to read: {csv_path}: {e}")
         continue
@@ -57,7 +57,7 @@ for cls in os.listdir(train_root):
         continue
     n_val = max(1, int(len(files) * 0.1))
     val_files = random.sample(files, n_val)
-    dst_dir = os.path.join(val_root, cls)
+    dst_dir = val_root
     os.makedirs(dst_dir, exist_ok=True)
     for f in val_files:
         src = os.path.join(cls_dir, f)

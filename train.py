@@ -5,6 +5,7 @@ import json
 import random
 from typing import Dict, Tuple
 import time
+from tqdm import tqdm
 
 import torch
 import torch.nn as nn
@@ -202,7 +203,7 @@ def main():
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.5)
 
     best_acc = 0.0
-    for epoch in range(1, NUM_EPOCHS + 1):
+    for epoch in tqdm(range(1, NUM_EPOCHS + 1)):
         model.train()
         total, running_loss, running_correct = 0, 0.0, 0
 
