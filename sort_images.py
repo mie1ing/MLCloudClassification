@@ -1,14 +1,20 @@
 import os
+import random
 import shutil
 import pandas as pd
 
 # Config: recursively scan all subdirectories under top_dir; only process directories that have exactly one .csv
-top_dir = "all_images"           # Top-level directory
-output_root = "training_data"    # Unified destination root directory
-move_files = False               # True=move, False=copy
+top_dir = "all_images"           # Top-level directory containing unclassified images
+train_root = "training_data"     # Destination directory for training images
+val_root = "validation_data"     # Destination directory for validation images
+move_files = False               # True=move, False=copy from source to training_data
 overwrite = False                # True=overwrite existing targets; False=skip
 
-os.makedirs(output_root, exist_ok=True)
+os.makedirs(train_root, exist_ok=True)
+os.makedirs(val_root, exist_ok=True)
+
+stats_by_src = {}
+total_classified = 0
 
 for dirpath, _, filenames in os.walk(top_dir):
     csvs = [f for f in filenames if f.lower().endswith(".csv")]
@@ -16,7 +22,8 @@ for dirpath, _, filenames in os.walk(top_dir):
         continue  # Only process directories that meet the condition
     csv_path = os.path.join(dirpath, csvs[0])
     try:
-        df = pd.read_csv(csv_path, header=None)  # First column=filename, second column=class
+        # First column=filename, second column=class
+        df = pd.read_csv(csv_path, header=None)
     except Exception as e:
         print(f"Failed to read: {csv_path}: {e}")
         continue
@@ -25,7 +32,7 @@ for dirpath, _, filenames in os.walk(top_dir):
         if not os.path.exists(src):
             print(f"Missing: {src}")
             continue
-        dst_dir = os.path.join(output_root, cls)
+        dst_dir = os.path.join(train_root, cls)
         os.makedirs(dst_dir, exist_ok=True)
         dst = os.path.join(dst_dir, os.path.basename(str(fname)))
         if os.path.exists(dst) and not overwrite:
@@ -34,3 +41,38 @@ for dirpath, _, filenames in os.walk(top_dir):
             shutil.move(src, dst)
         else:
             shutil.copy2(src, dst)
+        rel_dir = os.path.relpath(dirpath, top_dir)
+        stats_by_src[rel_dir] = stats_by_src.get(rel_dir, 0) + 1
+        total_classified += 1
+
+# After initial classification, split validation set
+val_records = []
+for cls in os.listdir(train_root):
+    cls_dir = os.path.join(train_root, cls)
+    if not os.path.isdir(cls_dir):
+        continue
+    files = [f for f in os.listdir(cls_dir)
+             if os.path.isfile(os.path.join(cls_dir, f))]
+    if not files:
+        continue
+    n_val = max(1, int(len(files) * 0.1))
+    val_files = random.sample(files, n_val)
+    dst_dir = os.path.join(val_root, cls)
+    os.makedirs(dst_dir, exist_ok=True)
+    for f in val_files:
+        src = os.path.join(cls_dir, f)
+        dst = os.path.join(dst_dir, f)
+        shutil.move(src, dst)
+        val_records.append((f, cls))
+
+if val_records:
+    pd.DataFrame(val_records, columns=["filename", "class"]).to_csv(
+        "val_data_class.csv", index=False
+    )
+
+# Print statistics
+print("\nStatistics:")
+for folder, count in sorted(stats_by_src.items()):
+    print(f"{folder}: {count} images classified")
+print(f"Total images classified: {total_classified}")
+
