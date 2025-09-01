@@ -2,6 +2,7 @@ import os
 import random
 import shutil
 import pandas as pd
+from config import SEED
 
 # Config: recursively scan all subdirectories under top_dir; only process directories that have exactly one .csv
 top_dir = "unsort_images"           # Top-level directory containing unclassified images
@@ -9,6 +10,7 @@ train_root = "training_data"     # Destination directory for training images
 val_root = "validation_data"     # Destination directory for validation images
 move_files = False               # True=move, False=copy from source to training_data
 overwrite = False                # True=overwrite existing targets; False=skip
+split_val = True                 # True=split 10% of images for validation before training
 
 os.makedirs(train_root, exist_ok=True)
 os.makedirs(val_root, exist_ok=True)
@@ -45,30 +47,32 @@ for dirpath, _, filenames in os.walk(top_dir):
         stats_by_src[rel_dir] = stats_by_src.get(rel_dir, 0) + 1
         total_classified += 1
 
-# After initial classification, split validation set
-val_records = []
-for cls in os.listdir(train_root):
-    cls_dir = os.path.join(train_root, cls)
-    if not os.path.isdir(cls_dir):
-        continue
-    files = [f for f in os.listdir(cls_dir)
-             if os.path.isfile(os.path.join(cls_dir, f))]
-    if not files:
-        continue
-    n_val = max(1, int(len(files) * 0.1))
-    val_files = random.sample(files, n_val)
-    dst_dir = val_root
-    os.makedirs(dst_dir, exist_ok=True)
-    for f in val_files:
-        src = os.path.join(cls_dir, f)
-        dst = os.path.join(dst_dir, f)
-        shutil.move(src, dst)
-        val_records.append((f, cls))
+# After initial classification, split validation set if split=true
+if split_val:
+    random.seed(SEED)
+    val_records = []
+    for cls in os.listdir(train_root):
+        cls_dir = os.path.join(train_root, cls)
+        if not os.path.isdir(cls_dir):
+            continue
+        files = [f for f in os.listdir(cls_dir)
+                if os.path.isfile(os.path.join(cls_dir, f))]
+        if not files:
+            continue
+        n_val = max(1, int(len(files) * 0.1))
+        val_files = random.sample(files, n_val)
+        dst_dir = val_root
+        os.makedirs(dst_dir, exist_ok=True)
+        for f in val_files:
+            src = os.path.join(cls_dir, f)
+            dst = os.path.join(dst_dir, f)
+            shutil.move(src, dst)
+            val_records.append((f, cls))
 
-if val_records:
-    pd.DataFrame(val_records, columns=["filename", "class"]).to_csv(
-        "val_data_class.csv", index=False
-    )
+    if val_records:
+        pd.DataFrame(val_records, columns=["filename", "class"]).to_csv(
+            "val_data_class.csv", index=False
+        )
 
 # Print statistics
 print("\nStatistics:")

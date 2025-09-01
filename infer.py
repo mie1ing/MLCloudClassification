@@ -3,7 +3,7 @@
 import os
 import csv
 from typing import Tuple, List
-# from tqdm import tqdm
+from tqdm import tqdm
 
 import torch
 import torch.nn.functional as F
@@ -86,8 +86,8 @@ def predict_folder(folder: str, csv_path: str = None):
     valid_exts = (".jpg", ".jpeg", ".png", ".bmp")
     results = []
     total = 0
-    for fn in os.listdir(folder):
-    # for fn in tqdm(os.listdir(folder)):
+    # for fn in os.listdir(folder):
+    for fn in tqdm(os.listdir(folder)):
         if fn.lower().endswith(valid_exts):
             total += 1
             p = os.path.join(folder, fn)
@@ -113,4 +113,4 @@ if __name__ == "__main__":
     # Example: batch over a directory
     # for name, cls, score in predict_folder("testing_data", csv_path="testing_data/test_results.csv"):
     #     print(f"{name}\t{cls}\t{score:.4f}")
-    predict_folder("testing_data", csv_path="testing_data/test_results.csv")
+    predict_folder("validation_data", csv_path="0827_0829_1epoch.csv")
