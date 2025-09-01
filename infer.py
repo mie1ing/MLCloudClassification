@@ -6,13 +6,32 @@ from typing import Tuple, List
 
 import torch
 import torch.nn.functional as F
-from PIL import Image
+from PIL import Image, ImageFile
 from torchvision import transforms, models
 
 from config import (
     CLASS_NAMES, NUM_CLASSES, IMAGE_SIZE, MODEL_NAME,
     IMAGENET_MEAN, IMAGENET_STD, BEST_WEIGHTS_PATH
 )
+
+# Allow decoding truncated images to avoid hard failures on mildly corrupted files
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+
+def is_image_ok(path: str) -> bool:
+    """Quick integrity check without fully decoding image data."""
+    try:
+        with Image.open(path) as img:
+            img.verify()
+        return True
+    except Exception:
+        return False
+
+
+def safe_pil_loader(path: str) -> Image.Image:
+    """Robust PIL loader that always converts to RGB."""
+    with Image.open(path) as img:
+        return img.convert("RGB")
 
 def make_val_transform():
     h, w = IMAGE_SIZE
@@ -45,7 +64,9 @@ def predict_image(path: str) -> Tuple[str, float, List[float]]:
     device = torch.device("cpu")
     tfm = make_val_transform()
 
-    img = Image.open(path).convert("RGB")
+    if not is_image_ok(path):
+        raise ValueError(f"Corrupted or unreadable image: {path}")
+    img = safe_pil_loader(path)
     x = tfm(img).unsqueeze(0).to(device)  # [1, C, H, W]
 
     model = get_model(MODEL_NAME, NUM_CLASSES)
@@ -63,9 +84,14 @@ def predict_image(path: str) -> Tuple[str, float, List[float]]:
 def predict_folder(folder: str, csv_path: str = None):
     valid_exts = (".jpg", ".jpeg", ".png", ".bmp")
     results = []
+    total = 0
     for fn in os.listdir(folder):
         if fn.lower().endswith(valid_exts):
+            total += 1
             p = os.path.join(folder, fn)
+            if not is_image_ok(p):
+                print(f"Skipping corrupted or unreadable image: {fn}")
+                continue
             cls, score, _ = predict_image(p)
             results.append((fn, cls, score))
     if csv_path:
@@ -73,6 +99,8 @@ def predict_folder(folder: str, csv_path: str = None):
             writer = csv.writer(f)
             writer.writerow(["filename", "prediction", "score"])
             writer.writerows(results)
+    if total and len(results) < total:
+        print(f"Filtered out {total - len(results)} invalid images out of {total}")
     return results
 
 if __name__ == "__main__":
