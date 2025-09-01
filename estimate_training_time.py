@@ -5,12 +5,14 @@ import time
 import config
 
 
-def time_single_epoch(image_size: int) -> float:
+def time_single_epoch(image_size: int, weights_file: str) -> float:
     """Run one epoch of training at the given resolution and return seconds."""
     original_size = config.IMAGE_SIZE
     original_epochs = config.NUM_EPOCHS
+    original_path = config.BEST_WEIGHTS_PATH
     config.IMAGE_SIZE = (image_size, image_size)
     config.NUM_EPOCHS = 1
+    config.BEST_WEIGHTS_PATH = weights_file
     try:
         import train  # local import so reload reflects patched config
         importlib.reload(train)
@@ -20,6 +22,7 @@ def time_single_epoch(image_size: int) -> float:
     finally:
         config.IMAGE_SIZE = original_size
         config.NUM_EPOCHS = original_epochs
+        config.BEST_WEIGHTS_PATH = original_path
 
 
 def main() -> None:
@@ -39,11 +42,17 @@ def main() -> None:
         default=config.NUM_EPOCHS,
         help="Total epochs to scale from the measured single epoch.",
     )
+    parser.add_argument(
+        "--weights-file",
+        type=str,
+        default="est_time.pt",
+        help="Where to save temporary weights for each timing run.",
+    )
     args = parser.parse_args()
 
     for i, size in enumerate(args.image_sizes, start=1):
         try:
-            elapsed = time_single_epoch(size)
+            elapsed = time_single_epoch(size, args.weights_file)
         except Exception as exc:
             print(f"Run {i} (image_size={size}) failed: {exc}")
             continue
