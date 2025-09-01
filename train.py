@@ -11,6 +11,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, Subset, random_split
 from torchvision import datasets, transforms, models
 from PIL import Image, ImageFile
+from tqdm.auto import tqdm
 
 from config import (
     DATA_DIR, CLASS_NAMES, NUM_CLASSES, IMAGE_SIZE,
@@ -122,7 +123,7 @@ def evaluate(model: nn.Module, loader: DataLoader, device: torch.device) -> Tupl
     model.eval()
     total, correct, loss_sum = 0, 0, 0.0
     criterion = nn.CrossEntropyLoss()
-    for x, y in loader:
+    for x, y in tqdm(loader, desc="Evaluating", leave=False):
         x = x.to(device)
         y = y.to(device)
         logits = model(x)
@@ -205,10 +206,9 @@ def main():
         model.train()
         total, running_loss, running_correct = 0, 0.0, 0
 
-        for x, y in train_loader:
+        for x, y in tqdm(train_loader, desc=f"Epoch {epoch}/{NUM_EPOCHS}"):
             x = x.to(device)
             y = y.to(device)
-
             optimizer.zero_grad(set_to_none=True)
             logits = model(x)
             loss = criterion(logits, y)
