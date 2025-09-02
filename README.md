@@ -157,10 +157,12 @@ no header.
 
 ### Visualizing Results
 
-Plot the contingency table using `plot_contingency.py` to quickly inspect model performance:
+`compare_results.py` can also plot the contingency table for a quick visual
+overview:
 
 ```bash
-python plot_contingency.py --table table.csv --out table.png
+python compare_results.py --pred test_results.csv --truth ground_truth.csv \
+    --out table.csv --plot --plot-out table.png
 ```
 
-Add `--show` to display the figure interactively instead of saving it.
+Add `--show-plot` to display the figure interactively instead of saving it.
