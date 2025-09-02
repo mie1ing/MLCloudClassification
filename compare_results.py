@@ -9,6 +9,7 @@ Only images present in both files are compared.
 
 Usage:
     python compare_results.py --pred test_results.csv --truth ground_truth.csv --out table.csv
+    --plot --plot-out table.png
 
 The resulting contingency table is written to a CSV file with actual classes as rows
 and predicted classes as columns. Class labels always follow ``CLASS_NAMES`` from

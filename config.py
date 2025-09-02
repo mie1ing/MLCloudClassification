@@ -3,7 +3,7 @@
 from typing import List, Tuple
 
 # Data and classes
-DATA_DIR: str = "training_data/"
+DATA_DIR: str = "without_0830/"
 CLASS_NAMES: List[str] = [
     "Altocumulus", 'Altostratus', "Cirrocumulus",
     'Cirrostratus', "Cirrus", "Clear sky", "Cumulus",
@@ -31,4 +31,4 @@ IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD  = [0.229, 0.224, 0.225]
 
 # Best weights save path
-BEST_WEIGHTS_PATH: str = "resnet18_0827_0829.pt"
+BEST_WEIGHTS_PATH: str = "resnet18_without_0830.pt"

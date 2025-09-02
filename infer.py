@@ -113,4 +113,4 @@ if __name__ == "__main__":
     # Example: batch over a directory
     # for name, cls, score in predict_folder("testing_data", csv_path="testing_data/test_results.csv"):
     #     print(f"{name}\t{cls}\t{score:.4f}")
-    predict_folder("validation_data", csv_path="0827_0829_1epoch.csv")
+    predict_folder("unsort_images/20250830", csv_path="prediction/20250830.csv")

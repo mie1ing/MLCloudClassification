@@ -6,11 +6,11 @@ from config import SEED
 
 # Config: recursively scan all subdirectories under top_dir; only process directories that have exactly one .csv
 top_dir = "unsort_images"           # Top-level directory containing unclassified images
-train_root = "training_data"     # Destination directory for training images
+train_root = "without_0830"     # Destination directory for training images
 val_root = "validation_data"     # Destination directory for validation images
 move_files = False               # True=move, False=copy from source to training_data
 overwrite = False                # True=overwrite existing targets; False=skip
-split_val = True                 # True=split 10% of images for validation before training
+split_val = False                 # True=split 10% of images for validation before training
 
 os.makedirs(train_root, exist_ok=True)
 os.makedirs(val_root, exist_ok=True)
