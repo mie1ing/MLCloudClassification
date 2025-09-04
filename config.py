@@ -3,11 +3,13 @@
 from typing import List, Tuple
 
 # Data and classes
-DATA_DIR: str = "without_0830/"
+DATA_DIR: str = "GCD_class/"
 CLASS_NAMES: List[str] = [
-    "Altocumulus", 'Altostratus', "Cirrocumulus",
-    'Cirrostratus', "Cirrus", "Clear sky", "Cumulus",
-    "Stratocumulus", 'Stratus', "Indistinguishable",
+    # "Altocumulus", "Stratocumulus", "Cirrocumulus",
+    # "Cirrostratus", "Cirrus", "Clear sky", "Cumulus",
+    # "Stratocumulus", "Stratus", "Indistinguishable",
+    "Altocumulus", "Cirrus",
+    "Clear sky", "Cumulus", "Stratocumulus"
 ]
 NUM_CLASSES: int = len(CLASS_NAMES)
 
@@ -31,4 +33,4 @@ IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD  = [0.229, 0.224, 0.225]
 
 # Best weights save path
-BEST_WEIGHTS_PATH: str = "resnet18_without_0830.pt"
+BEST_WEIGHTS_PATH: str = "resnet18_GCD_class.pt"

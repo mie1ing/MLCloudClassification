@@ -6,7 +6,7 @@ from config import SEED
 
 # Config: recursively scan all subdirectories under top_dir; only process directories that have exactly one .csv
 top_dir = "unsort_images"           # Top-level directory containing unclassified images
-train_root = "without_0830"     # Destination directory for training images
+train_root = "new_class_test"     # Destination directory for training images
 val_root = "validation_data"     # Destination directory for validation images
 move_files = False               # True=move, False=copy from source to training_data
 overwrite = False                # True=overwrite existing targets; False=skip
@@ -25,11 +25,11 @@ for dirpath, _, filenames in os.walk(top_dir):
     csv_path = os.path.join(dirpath, csvs[0])
     try:
         # First column=filename, second column=class
-        df = pd.read_csv(csv_path, header=None).dropna(subset=[1])
+        df = pd.read_csv(csv_path, header=0).dropna(subset=['1'])
     except Exception as e:
         print(f"Failed to read: {csv_path}: {e}")
         continue
-    for fname, cls, _ in df.values:
+    for fname, cls in df.values:
         src = os.path.join(dirpath, str(fname))
         if not os.path.exists(src):
             print(f"Missing: {src}")
